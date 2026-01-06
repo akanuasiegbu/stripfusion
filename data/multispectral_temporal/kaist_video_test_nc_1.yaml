@@ -1,0 +1,10 @@
+train_rgb: 
+val_rgb: ./miracle_update_cvc14_kaist/kaist/kaist_test/test20all_vis.txt
+train_ir: 
+val_ir: ./miracle_update_cvc14_kaist/kaist/kaist_test/test20all_lwir.txt
+
+# number of classes
+nc: 1
+
+# class names
+names: ['person']

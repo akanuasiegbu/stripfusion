@@ -1,0 +1,18 @@
+python  test_video.py \
+   --weights ./runs/train/kaist_stripmlpSTmixv2_tadaconv_thermal_rgb_backbone_head_rgb_lframe_3_stride_3_lastframe_no_deform_wholedata_set_1_klbacknl_update_selector/weights/cur_10.pt \
+   --data ./data/multispectral_temporal/kaist_video_test_nc_1.yaml \
+   --name select_useful_name \
+   --lframe 3 \
+   --temporal_stride 3 \
+   --gframe 0 \
+   --regex_search .set...V... \
+   --dataset_used kaist \
+   --img-size 640 \
+   --save-json \
+   --use_tadaconv \
+   --detection_head lastframe \
+   --task test \
+   --exist-ok \
+   --conf-thres 0.001 \
+   --select_thermal_rgb_inference \
+   --use_thermal_inference

@@ -1,0 +1,39 @@
+{
+    "image": "multispectral-obj-det:latest",
+    "extensions": [
+      "ms-python.python",
+      "donjayamanne.python-environment-manager",
+      "jeremyrajan.file-script-runner",
+      "ms-python.isort",
+      "ms-python.vscode-pylance",
+      "ms-toolsai.jupyter",
+      "gitlab.gitlab-workflow",
+      "eamodio.gitlens"
+    ],
+  "mounts":[
+    "source=/mnt/roahm,target=/mnt/roahm,type=bind",
+    "source=/mnt/roahm/users/akanu/projects/fusion_therm_rgb/state-of-art-detectors/yolov5/runs/test,target=/mnt/roahm/users/akanu/projects/fusion_therm_rgb/state-of-art-detectors/yolov5/runs/test,type=bind",
+    "source=/home/akanu/akanu/projects/Projects_to_make_public/MambaST/,target=/home/MambaST/,type=bind",
+    "source=/mnt/ws-frb/projects/thermal_rgb/njotwani/multispectral-video-object-detection/runs/,target=/home/nitin/,type=bind",
+    "source=/home/akanu/local_datasets,target=/mnt/workspace/datasets,type=bind",
+    // "source=/home/akanu/local_datasets/kaist-cvpr15,target=/mnt/workspace/datasets/kaist-cvpr15,type=bind",
+  ], 
+    // "containerUser": "akanu",
+    "containerEnv": {"DISPLAY":"${env:DISPLAY}"},
+    "runArgs": [
+                // "-u ${env:USER}",
+                "--privileged",
+                "--gpus=all",
+                "-e NVIDIA_DRIVER_CAPABILITIES=video,compute,utility",
+                "--net=host",
+                "--ipc=host",
+                "--runtime=nvidia",
+                "-e SDL_VIDEODRIVER=x11",
+                // "-v=/mnt/workspace/datasets:/mnt/workspace/datasets:ro",
+                // "-v=/mnt/roahm:/mnt/roahm"
+              ],
+              
+    "workspaceMount": "source=${localWorkspaceFolder},target=/home/${env:USER},type=bind",
+    "workspaceFolder": "/home/${env:USER}"
+  }
+

@@ -1,0 +1,6 @@
+train_rgb: /home/akanu/miracle_update_kaist/kaist_video_sanitized_nc1/train_vis_kaist_video.txt
+val_rgb: /home/akanu/miracle_update_kaist/kaist_video_sanitized_nc1/val_vis_kaist_video.txt
+train_ir: /home/akanu/miracle_update_kaist/kaist_video_sanitized_nc1/train_lwir_kaist_video.txt
+val_ir: /home/akanu/miracle_update_kaist/kaist_video_sanitized_nc1/val_lwir_kaist_video.txt
+nc: 1
+names: ['person']

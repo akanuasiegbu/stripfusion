@@ -1,0 +1,10 @@
+train_rgb: /home/xiangbog/data_temp/kaist_video_sanitized_temp/train_vis_kaist_video.txt
+val_rgb: /home/xiangbog/data_temp/kaist_video_sanitized_temp/val_vis_kaist_video.txt
+train_ir: /home/xiangbog/data_temp/kaist_video_sanitized_temp/train_lwir_kaist_video.txt
+val_ir: /home/xiangbog/data_temp/kaist_video_sanitized_temp/val_lwir_kaist_video.txt
+
+# number of classes
+nc: 4
+
+# class names
+names: ['person', 'people', 'cyclist', 'person?']

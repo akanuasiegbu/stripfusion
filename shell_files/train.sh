@@ -1,0 +1,26 @@
+   python train_video.py \
+   --data ./data/multispectral_temporal/kaist_video_sanitized_nc1_whole_updated.yaml \
+   --batch-size 6 \
+   --epochs 25 \
+   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_cvc14_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
+   --lframe 3 \
+   --temporal_stride 3 \
+   --gframe 0 \
+   --dataset_used kaist \
+   --regex_search '.set...V...' \
+   --img-size 640 \
+   --name select_useful_name  \
+   --use_tadaconv \
+   --detection_head lastframe \
+   --hyp data/hyp.finetune_focal_loss_high_obj_low_scale.yaml \
+   --sanitized \
+   --temporal_mosaic \
+   --mosaic \
+   --save_all_model_epochs \
+   --ignore_high_occ \
+   --all_objects \
+   --use_both_labels_for_optimization \
+   --detector_weights both \
+   --use_mode_spec_back_weights \
+   --thermal_weights yolov5l_kaist_best_thermal.pt \
+   --rgb_weights yolov5l_kaist_best_rgb.pt

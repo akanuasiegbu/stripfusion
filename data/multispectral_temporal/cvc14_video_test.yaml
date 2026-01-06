@@ -1,0 +1,10 @@
+train_rgb: 
+val_rgb: ./miracle_update_cvc14_kaist/CVC14/cvc14_test_visible.txt
+train_ir: 
+val_ir: ./miracle_update_cvc14_kaist/CVC14/cvc14_test_fir.txt
+
+# number of classes
+nc: 1
+
+# class names
+names: ['person']

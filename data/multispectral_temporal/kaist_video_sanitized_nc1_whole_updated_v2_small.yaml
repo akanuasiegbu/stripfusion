@@ -1,0 +1,7 @@
+train_rgb: ./miracle_update_kaist/kaist/kaist_video_sanitized_whole_nc1_small/train_vis_kaist_video.txt
+val_rgb: ./miracle_update_kaist/kaist/kaist_video_sanitized_nc1/val_vis_kaist_video.txt
+train_ir: ./miracle_update_kaist/kaist/kaist_video_sanitized_whole_nc1_small/train_lwir_kaist_video.txt
+val_ir: ./miracle_update_kaist/kaist/kaist_video_sanitized_nc1/val_lwir_kaist_video.txt
+nc: 1
+names: ['person']
+# val_rgb and val_ir are just dummies to prevent changes to code, Note that val_rgb is actually a subset of train_rgb 

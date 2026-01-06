@@ -1,0 +1,10 @@
+train_rgb: 
+val_rgb: /mnt/workspace/datasets/kaist-cvpr15/txt_imageset/test20all_vis.txt
+train_ir: 
+val_ir: /mnt/workspace/datasets/kaist-cvpr15/txt_imageset/test20all_lwir.txt
+
+# number of classes
+nc: 4
+
+# class names
+names: ['person', 'people', 'cyclist', 'person?']

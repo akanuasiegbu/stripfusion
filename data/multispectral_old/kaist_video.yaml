@@ -1,0 +1,10 @@
+train_rgb: /mnt/workspace/datasets/kaist-cvpr15/kaist_video/train_vis_kaist_video.txt
+val_rgb: /mnt/workspace/datasets/kaist-cvpr15/kaist_video/val_vis_kaist_video.txt
+train_ir: /mnt/workspace/datasets/kaist-cvpr15/kaist_video/train_lwir_kaist_video.txt
+val_ir: /mnt/workspace/datasets/kaist-cvpr15/kaist_video/val_lwir_kaist_video.txt
+
+# number of classes
+nc: 4
+
+# class names
+names: ['person', 'people', 'cyclist', 'person?']
