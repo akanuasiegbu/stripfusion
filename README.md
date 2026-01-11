@@ -1,4 +1,9 @@
+# Strip-Fusion: Spatiotemporal Fusion for Multispectral Pedestrian Detection
+Asiegbu Miracle Kanu-Asiegbu, Nitin Jotwani, and Xiaoxiao Du
 
+Multimedia is in `multimedia_attachment` folder
+
+## Steps for Training/Inference
 1. **Build Docker Image**
    ```bash
    cd docker
@@ -223,5 +228,4 @@ If you turn off `--plot_rgb_image`, results will plot on thermal image
   ```
   
 * Note that since we resize the CVC-14 to correct size, we use the orginal images `cvc14_video_test.yaml` instead of `cvc14_video_test_resizedv2.yaml` to plot images (this is not a mistake)
-# update
-# contributor refresh
+
