@@ -1,6 +1,0 @@
-train_rgb: /home/akanu/miracle_update_kaist/kaist_video_sanitized_lframe3_stride3_nc1_with_ignore/train_vis_kaist_video.txt
-val_rgb: /home/akanu/miracle_update_kaist/kaist_video_sanitized_lframe3_stride3_nc1_with_ignore/val_vis_kaist_video.txt
-train_ir: /home/akanu/miracle_update_kaist/kaist_video_sanitized_lframe3_stride3_nc1_with_ignore/train_lwir_kaist_video.txt
-val_ir: /home/akanu/miracle_update_kaist/kaist_video_sanitized_lframe3_stride3_nc1_with_ignore/val_lwir_kaist_video.txt
-nc: 4
-names: ['person', 'people', 'cyclist', 'person?']

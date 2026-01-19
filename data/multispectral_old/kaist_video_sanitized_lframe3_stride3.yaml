@@ -1,6 +1,0 @@
-train_rgb: /home/akanu/kaist_video_sanitized_lframe3_stride3/train_vis_kaist_video.txt
-val_rgb: /home/akanu/kaist_video_sanitized_lframe3_stride3/val_vis_kaist_video.txt
-train_ir: /home/akanu/kaist_video_sanitized_lframe3_stride3/train_lwir_kaist_video.txt
-val_ir: /home/akanu/kaist_video_sanitized_lframe3_stride3/val_lwir_kaist_video.txt
-nc: 4
-names: ['person', 'people', 'cyclist', 'person?']
