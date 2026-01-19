@@ -231,4 +231,19 @@ If you turn off `--plot_rgb_image`, results will plot on thermal image
   ```
   
 * Note that since we resize the CVC-14 to correct size, we use the orginal images `cvc14_video_test.yaml` instead of `cvc14_video_test_resizedv2.yaml` to plot images (this is not a mistake)
+## Citation
+```
+@ARTICLE{11353459,
+  author={Kanu-Asiegbu, Asiegbu Miracle and Jotwani, Nitin and Du, Xiaoxiao},
+  journal={IEEE Robotics and Automation Letters}, 
+  title={Strip-Fusion: Spatiotemporal Fusion for Multispectral Pedestrian Detection}, 
+  year={2026},
+  volume={},
+  number={},
+  pages={1-8},
+  keywords={Pedestrians;Strips;Feature extraction;Adaptation models;Uncertainty;Proposals;Head;Lighting;Complexity theory;Cameras;Deep Learning for Visual Perception;Sensor Fusion;and Computer Vision for Transportation},
+  doi={10.1109/LRA.2026.3654448}}
+```
 
+** Acknowledgment 
+This project is derived from **https://github.com/DocF/multispectral-object-detection**, and original authorship is preserved in the contributor list.
