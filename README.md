@@ -119,7 +119,7 @@ Use the testing to obtain the json file.
   1) To use only visible detection apply a) and d). 
   2) To use only thermal detections apply b) and d). 
   3) To use both detections with only NMS apply a), b), and d).
-  4) To use both detections with postprocessing, apply a), b), c) and d).
+  4) To use both detections with postprocessing **(Algo 1.)** , apply a), b), c) and d).
 
 Note when doing inference on a model that does not use tadaconv turn off  `--use_tadaconv` and update the `yolov_modules_to_select.yaml` file and set to `use_tadaconv: False`.
 
