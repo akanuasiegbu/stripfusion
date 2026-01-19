@@ -1,0 +1,3 @@
+use_tadaconv: True 
+# Note we dont use fusion strategy or detection head anymore from here
+# detection_head: fullframes #default, lastframe, fullframes
