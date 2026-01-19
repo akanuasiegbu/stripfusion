@@ -3,7 +3,7 @@ Asiegbu Miracle Kanu-Asiegbu, Nitin Jotwani, and Xiaoxiao Du
 
 Multimedia is in `multimedia_attachment` folder
 
-## Steps for Training/Inference
+## 1. Docker
 1. **Build Docker Image**
    ```bash
    cd docker
@@ -19,21 +19,25 @@ Multimedia is in `multimedia_attachment` folder
    *Note: Update `your_username` and `path_to_project_directory` accordingly.*
 
 
-3. **Download and Prepare Dataset**
-   - Download the KAIST-CVPR15 dataset from [here](https://soonminhwang.github.io/rgbt-ped-detection/) and place it in your dataset directory. (Kaist and CVC-14 is already downloaded and prepared )
-   - Copy the dataset:
-     ```bash
-     cp -r ~/dataset/* path_to_your_dataset_directory
-     ```
-   - Copy the sanitized annotations format:
-     ```bash
-     cp sanitized_annotations_format_all path_to_your_dataset_directory
-     ```
+## 2. Download and Prepare Dataset
+- **KAIST**
+  1) **Get Image Pairs**  
+     Download the [KAIST-CVPR15 dataset](https://soonminhwang.github.io/rgbt-ped-detection/) and place it in your dataset directory.
 
-4. **Update Annotation Path**
-   - Modify `KAIST_ANNOTATION_PATH` in `utils/datasets_vid.py` to the absolute path of `sanitized_annotations_format_all`. (Already Done)
+  2) **Get Correct Annotations**  
+     Download the [Sanitized Training Annotations](https://li-chengyang.github.io/home/MSDS-RCNN/).  
+     > A local backup copy of the sanitized annotations will also maintained in our drive for redundancy and reproducibility.
 
-5. **Training**
+- **CVC-14**
+  1) **Get Images and Annotations**  
+     Download the CVC-14 dataset along with its annotations.
+
+  2) **Data Cleanup**  
+     Use **`CVC14_txt_to_numpy_training.py`** to clean and preprocess the data.
+  
+- Might need to Update Annotation Path: Modify `KAIST_ANNOTATION_PATH` in `utils/datasets_vid.py` to the absolute path of `sanitized_annotations_format_all`.
+
+## 3. Training
 Important parameters: `--kl_cross`, `--n_roi`. Default is `--n_roi 300`, meaning kl diverge is performed as in paper shown. When `--n_roi 0`, kl divergence is not used. When `--n_roi 300` and `--kl_cross`, cross KL divergence is used. 
 
 `--freeze_bb_rgb_bb_ir_det_rgb` is used to say that backbone is frozen while the rgb head is frozen. While `--freeze_bb_rgb_bb_ir_det_ir` is used to say that backbone is frozen while the thermal head is frozen. If `--thermal_weights` and `--rgb_weights` are loaded incorrectly this is not true.
@@ -92,7 +96,7 @@ python train_video.py \
 --temporal_mosaic \
 --mosaic \
 --use_tadaconv \
---hyp data/hyp.finetune_focal_loss_high_obj_low_scale.yaml \
+--hyp data/hyp.finetune_focal_loss_high_obj_low_scale_kl_2.yaml \
 --save_all_model_epochs \
 --resize_cvc14_for_eval \
 --detection_head lastframe \
@@ -109,7 +113,7 @@ python train_video.py \
 *Transferred 1284/4876 (with tadaconv) or 1284/1664 items from point_to_kaist_model
 Froze 522/4876 items from point_to_kaist_model*
 
-6. **Testing**
+## 4. Inference
 
 Use the testing to obtain the json file. 
 
@@ -175,7 +179,7 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
    ```
 *Note that can use `--multiple_outputs` to obtain json from all the epochs, for visualization and numerical results use `--conf-thres 0.2` so can see the higher confidence bounding *
 
-7. **Numerical Results**
+## 5.  Inference: Numerical Results
 
 Get numerical results for `--conf-thres 0.2`
 
@@ -193,9 +197,8 @@ CVC-14 Numerical Results
     --rstFiles JSON_FILE
   ```
 
-*Note that can use `--multiple_outputs` to obtain missrate.json and plot/look at results from all the epochs*
 
-8. **Visualization**
+## 6. Inference: Visualization
 
 If you turn off `--plot_rgb_image`, results will plot on thermal image
 
