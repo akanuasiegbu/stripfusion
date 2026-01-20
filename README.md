@@ -4,14 +4,14 @@ Asiegbu Miracle Kanu-Asiegbu, Nitin Jotwani, and Xiaoxiao Du
 Multimedia is in `multimedia_attachment` folder
 
 ## 1. Docker
-1. **Build Docker Image**
+- **Build Docker Image**
    ```bash
    cd docker
    bash build.sh
    ```
    *Note: Make sure to change `USERNAME` and `USER_UID` in the script.*
 
-2. **Run Docker Container**
+- **Run Docker Container**
    ```bash
    cd ..
    bash docker/run.sh
@@ -114,7 +114,7 @@ python train_video.py \
 Froze 522/4876 items from point_to_kaist_model*
 
 ## 4. Inference
-
+Some of our Trained Models can be found on [Onedrive Link](https://1drv.ms/f/c/751cc5438003f879/IgA9c7KUJAjdQaOM5PxbZgYuARSrzgYr3oFM-V7cFY30gVs?e=E1XX1N).
 Use the testing to obtain the json file. 
 
   For postprocessing these parameters might are useful  a)`--use_rgb_inference`, b) `--use_thermal_inference`, c) `--pp_fusion_nms`, and d `--conf-thres`.
@@ -180,7 +180,7 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
 *Note that can use `--multiple_outputs` to obtain json from all the epochs, for visualization and numerical results use `--conf-thres 0.2` so can see the higher confidence bounding *
 
 ## 5.  Inference: Numerical Results
-
+Our Json Files for serval models can be found on [Onedrive Link](https://1drv.ms/f/c/751cc5438003f879/IgA9c7KUJAjdQaOM5PxbZgYuARSrzgYr3oFM-V7cFY30gVs?e=E1XX1N).
 Get numerical results for `--conf-thres 0.2`
 
 Kaist Numerical Results
