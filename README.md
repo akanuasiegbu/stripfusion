@@ -38,13 +38,28 @@ Multimedia is in `multimedia_attachment` folder
 - Might need to Update Annotation Path: Modify `KAIST_ANNOTATION_PATH` in `utils/datasets_vid.py` to the absolute path of `sanitized_annotations_format_all`.
 
 ## 3. Training
-Important parameters: `--kl_cross`, `--n_roi`. Default is `--n_roi 300`, meaning kl diverge is performed as in paper shown. When `--n_roi 0`, kl divergence is not used. When `--n_roi 300` and `--kl_cross`, cross KL divergence is used. 
 
-`--freeze_bb_rgb_bb_ir_det_rgb` is used to say that backbone is frozen while the rgb head is frozen. While `--freeze_bb_rgb_bb_ir_det_ir` is used to say that backbone is frozen while the thermal head is frozen. If `--thermal_weights` and `--rgb_weights` are loaded incorrectly this is not true.
+**KL Divergence (`--n_roi`)**  
+Default is `--n_roi 300`, which applies KL divergence as described in the paper.  
+Setting `--n_roi 0` disables KL divergence.
 
-To Train without using tadaconv need `--cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolo_without_tadaconv.yaml `
+**Backbone Freezing**  
+Calibration weights are always trainable.
 
-Kaist Sample Training Code 
+- `--freeze_bb_rgb_bb_ir_det_rgb` freezes the RGB and thermal backbones base weights and the RGB detection branch base weights, while the thermal detection branch remains trainable.
+- `--freeze_bb_rgb_bb_ir_det_ir` freezes the RGB and thermal backbones base weights and the thermal detection branch base weights, while the RGB detection branch remains trainable.
+
+**Pretrained Weights ("Base Weights")**  
+- `--rgb_weights` specifies the path to RGB pretrained weights (base weights) (e.g. `yolov5l_kaist_best_rgb.pt`).  
+- `--thermal_weights` specifies the path to thermal pretrained weights (base weights) (e.g. `yolov5l_kaist_best_thermal.pt`).
+
+**Training Behavior with TadaConv**  
+Training implicitly covers two cases: (1) frozen base weights with trainable calibration weights and (2) fully trainable base and calibration weights.
+
+**To Train without using tadaconv**
+`--cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolo_without_tadaconv.yaml `
+
+### **Kaist Sample Training Code**
    ```
    python train_video.py \
    --data ./data/multispectral_temporal/kaist_video_sanitized_nc1_whole_updated.yaml \
@@ -79,7 +94,8 @@ Kaist Sample Training Code
 *Sanity check Transferred 1284/4876 items from yolov5l_kaist_best_rgb.pt and yolov5l_kaist_best_thermal.pt
 Froze 522/4876 items from yolov5l_kaist_best_rgb.pt and yolov5l_kaist_best_thermal.pt *
 
-CVC14 Sample Training Code, If want to use separate labels for training:`cvc14_align_resizedv2`, we use only rgb labels to train each head:`cvc14_align_resizedv2_use_only_rgb_anns` which uses only rgb labels
+### **CVC14 Sample Training Code**
+If want to use separate labels for training:`cvc14_align_resizedv2`, we use only rgb labels to train each head:`cvc14_align_resizedv2_use_only_rgb_anns` which uses only rgb labels
    ```
 python train_video.py \
 --data ./data/multispectral_temporal/cvc14_video_aligned_resizedv2_whole.yaml \
@@ -127,7 +143,7 @@ Use the testing to obtain the json file.
 
 Note when doing inference on a model that does not use tadaconv turn off  `--use_tadaconv` and update the `yolov_modules_to_select.yaml` file and set to `use_tadaconv: False`.
 
-  Kaist Testing
+  ### **Kaist Testing**
    ```
    python  test_video.py \
    --weights point_to_kaist_model \
@@ -150,9 +166,8 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
    --use_rgb_inference
 
    ```
-*Note that can use `--multiple_outputs` to obtain json from all the epochs, for visualization and numerical results use `--conf-thres 0.2` so can see the higher confidence bounding boxes.
 
-  CVC14 Testing
+  ### **CVC-14 Testing**
    ```
    python  test_video.py \
    --weights point_to_cvc14_model \
@@ -177,20 +192,19 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
 
 
    ```
-*Note that can use `--multiple_outputs` to obtain json from all the epochs, for visualization and numerical results use `--conf-thres 0.2` so can see the higher confidence bounding *
 
 ## 5.  Inference: Numerical Results
 Our Json Files for serval models can be found on [Onedrive Link](https://1drv.ms/f/c/751cc5438003f879/IgA9c7KUJAjdQaOM5PxbZgYuARSrzgYr3oFM-V7cFY30gVs?e=E1XX1N).
 Get numerical results for `--conf-thres 0.2`
 
-Kaist Numerical Results
+### Kaist Numerical Results
   ```
     python miss_rate_and_map/evaluation_script.py \
    --annFile miss_rate_and_map/KAIST_annotation.json \
    --rstFiles JSON_FILE
   ```
 
-CVC-14 Numerical Results
+### CVC-14 Numerical Results
    ```
   python miss_rate_and_map/evaluation_script_cvc14.py \
     --annFile json_gt/cvc-14_test_tl.json \
@@ -202,7 +216,7 @@ CVC-14 Numerical Results
 
 If you turn off `--plot_rgb_image`, results will plot on thermal image
 
-*Visualization for Kaist*
+### Visualization for Kaist
   ```
   python visualization_using_missrate.py \
 --data ./data/multispectral_temporal/kaist_video_test_nc_1.yaml \
@@ -216,7 +230,7 @@ If you turn off `--plot_rgb_image`, results will plot on thermal image
 --exist-ok
   ```
 
-*Visualization for CVC-14*
+### Visualization for CVC-14
    ```
    python visualization_using_missrate.py \
     --data ./data/multispectral_temporal/cvc14_video_test.yaml \
