@@ -134,6 +134,7 @@ Some of our Trained Models can be found on [Onedrive Link](https://1drv.ms/f/c/7
 Use the testing to obtain the json file. 
 
   For postprocessing these parameters might are useful  a)`--use_rgb_inference`, b) `--use_thermal_inference`, c) `--pp_fusion_nms`, and d `--conf-thres`.
+  **Need to make sure `--lframe` and `--temporal_stride` match model.**
 
   Note that for postprocessing, currently need to set threshold inside `post_process_fusion.py` and change the thres for `fusion_predictions` function.
   1) To use only visible detection apply a) and d). 
