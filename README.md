@@ -69,7 +69,7 @@ Training implicitly covers two cases: (1) frozen base weights with trainable cal
    --data ./data/multispectral_temporal/kaist_video_sanitized_nc1_whole_updated.yaml \
    --batch-size 6 \
    --epochs 25 \
-   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_cvc14_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
+   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
    --lframe 3 \
    --temporal_stride 3 \
    --gframe 0 \
@@ -105,7 +105,7 @@ python train_video.py \
 --data ./data/multispectral_temporal/cvc14_video_aligned_resizedv2_whole.yaml \
 --batch-size 6 \
 --epochs 40 \
---cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_cvc14_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
+--cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
 --lframe 3 \
 --temporal_stride 3 \
 --gframe 0 \
@@ -152,7 +152,7 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
    ```
    python  test_video.py \
    --weights point_to_kaist_model \
-   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_cvc14_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
+   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
    --data ./data/multispectral_temporal/kaist_video_test_nc_1.yaml \
    --name select_useful_name_make_name_same_as_training \
    --lframe 3 \
@@ -177,7 +177,7 @@ Note when doing inference on a model that does not use tadaconv turn off  `--use
    python  test_video.py \
    --weights point_to_cvc14_model \
    --data ./data/multispectral_temporal/cvc14_video_test_resizedv2.yaml \
-   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_cvc14_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
+   --cfg ./models/transformer/two_detection_heads/ind_fusion_heads/yolov5l_tadaconv_stripmlpSTmixv2_lastframe_2DH_KLBackNL_full.yaml \
    --name select_useful_name_make_name_same_as_training \
    --lframe 3 \
    --temporal_stride 3 \
