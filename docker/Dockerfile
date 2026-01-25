@@ -29,8 +29,8 @@ RUN apt-get -y install tmux
 RUN apt-get -y install htop
 RUN pip install timm
 
-ARG USERNAME=njotwani
-ARG USER_UID=995200167
+ARG USERNAME=PUT_NAME_HERE
+ARG USER_UID=PUT_USER_UID_HERE
 ARG USER_GID=$USER_UID
 
 # Create the user
