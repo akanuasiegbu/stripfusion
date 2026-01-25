@@ -15,6 +15,5 @@ if select_modules['use_tadaconv']:
     print('Using Tadaconv Modules')
 else:
     from models.model_modules_concat_cft import *
-    # from models.model_modules_fusion import GPT
     print('Note that the Detect Class is imported to the yolo_test.py directly file')
     print('Using Concatnated CFT modules')

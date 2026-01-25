@@ -1,8 +1,5 @@
 import torch
 import torch.nn as nn
-from  torchvision.ops  import deform_conv2d
-from models.spatiotemporal_sampling_network import SpatialTemporalSampling
-from models.spatiotemporal_sampling_network_simpler import SpatialTemporalSamplingv2
 from datetime import datetime
 from utils.post_process_fusion import fuse_predictions
 class Detect(nn.Module):
@@ -49,66 +46,6 @@ class Detect(nn.Module):
     def _make_grid(nx=20, ny=20):
         yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
         return torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
-
-class LastFrameDeformDetect(nn.Module):
-    stride = None  # strides computed during build
-    export = False  # onnx export
-
-    def __init__(self, nc=80, anchors=(), ch=()):  # detection layer
-        super(LastFrameDeformDetect, self).__init__()
-        self.nc = nc  # number of classes
-        self.no = nc + 5  # number of outputs per anchor
-        self.nl = len(anchors)  # number of detection layers
-        self.na = len(anchors[0]) // 2  # number of anchors
-        self.grid = [torch.zeros(1)] * self.nl  # init grid
-        a = torch.tensor(anchors).float().view(self.nl, -1, 2)
-        self.register_buffer('anchors', a)  # shape(nl,na,2)
-        self.register_buffer('anchor_grid', a.clone().view(self.nl, 1, -1, 1, 1, 2))  # shape(nl,1,na,1,1,2)
-        self.m = nn.ModuleList(SpatialTemporalSampling(x, self.no*self.na, 3,3) for x in ch) #output deform conv
-
-    def forward(self, x):
-        # import pdb; pdb.set_trace()
-        feature = x.copy()
-        # x = x.copy()  # for profiling
-        z = []  # inference output
-        self.training |= self.export
-        for i in range(self.nl):
-            x[i] = self.m[i](x[i])  # conv
-            # if x[i].isnan().any():
-            #     raise RuntimeError("ERROR: Got NaN in {}".format(datetime.now()))
-            bs, _, ny, nx = x[i].shape  # x(bs,255,20,20) to x(bs,3,20,20,85)
-            x[i] = x[i].view(bs, self.na, self.no, ny, nx).permute(0, 1, 3, 4, 2).contiguous()
-
-            if not self.training:  # inference
-                if self.grid[i].shape[2:4] != x[i].shape[2:4]:
-                    self.grid[i] = self._make_grid(nx, ny).to(x[i].device )
-
-                y = x[i].sigmoid()
-                y[..., 0:2] = (y[..., 0:2] * 2. - 0.5 + self.grid[i]) * self.stride[i]  # xy
-                y[..., 2:4] = (y[..., 2:4] * 2) ** 2 * self.anchor_grid[i]  # wh
-                z.append(y.view(bs, -1, self.no))
-
-        return x if self.training else (torch.cat(z, 1), x, feature)
-
-    @staticmethod
-    def _make_grid(nx=20, ny=20):
-        yv, xv = torch.meshgrid([torch.arange(ny), torch.arange(nx)])
-        return torch.stack((xv, yv), 2).view((1, 1, ny, nx, 2)).float()
-
-
-# class LastFrameDeformDetectv2(LastFrameDeformDetect):
-
-#     def __init__(self, nc=80, anchors=(), ch=()):  # detection layer
-#         super(LastFrameDeformDetectv2, self).__init__()
-#         self.nc = nc  # number of classes
-#         self.no = nc + 5  # number of outputs per anchor
-#         self.nl = len(anchors)  # number of detection layers
-#         self.na = len(anchors[0]) // 2  # number of anchors
-#         self.grid = [torch.zeros(1)] * self.nl  # init grid
-#         a = torch.tensor(anchors).float().view(self.nl, -1, 2)
-#         self.register_buffer('anchors', a)  # shape(nl,na,2)
-#         self.register_buffer('anchor_grid', a.clone().view(self.nl, 1, -1, 1, 1, 2))  # shape(nl,1,na,1,1,2)
-#         self.m = nn.ModuleList(SpatialTemporalSamplingv2(x, self.no*self.na, 3,3) for x in ch) #output deform conv
 
 
 class LastFrameDetect(Detect):
@@ -273,28 +210,6 @@ class LastFrameThermalRgbDetectKLDivBackNL(LastFrameThermalRgbDetectKLDivBack):
         self.conv = nn.ModuleList(nn.Sequential(nn.Conv3d(in_channels=dim*2, out_channels=dim ,kernel_size=1, stride=1, padding=0), nn.LeakyReLU()) for dim in ch)
         self.conv_ir = nn.ModuleList(nn.Sequential(nn.Conv3d(in_channels=dim*2, out_channels=dim ,kernel_size=1, stride=1, padding=0), nn.LeakyReLU() ) for dim in ch)
 
-class LastFrameThermalRgbDetectDeform(ThermalRgbDetect):
-    def conv_modules_init(self, ch):
-        self.m  = nn.ModuleList(SpatialTemporalSampling(x, self.no*self.na, 3,3) for x in ch) #output deform conv
-        self.m_ir  = nn.ModuleList(SpatialTemporalSampling(x, self.no*self.na, 3,3) for x in ch) #output deform conv
-    
-    def fuseconv_init(self, ch):
-        self.conv = nn.ModuleList(nn.Sequential(nn.Conv3d(in_channels=dim*2, out_channels=dim ,kernel_size=1, stride=1, padding=0), nn.LeakyReLU()) for dim in ch)
-        self.conv_ir = nn.ModuleList(nn.Sequential(nn.Conv3d(in_channels=dim*2, out_channels=dim ,kernel_size=1, stride=1, padding=0), nn.LeakyReLU() ) for dim in ch)
-    
-    def fuseconv(self, x):
-        fused_bb_rgb_thermal = x[:3]
-        fused_in_head =  x[3:]
-        out = []
-        out_ir = []
-        out_tuple = []
-        for i, xx in enumerate(zip(fused_bb_rgb_thermal)):
-            out.append(self.conv[i](torch.cat((xx[0][0], fused_in_head[i]),dim=1))) # RGB
-            out_ir.append(self.conv_ir[i](torch.cat((xx[0][1], fused_in_head[i]),dim=1))) # Thermal
-            out_tuple.append((out[i], out_ir[i]))
-        out.extend(out_ir)
-        out.append(out_tuple)
-        return out
 
 
 class ThermalRgbDetectv2(nn.Module):
@@ -428,16 +343,12 @@ class LastFrameThermalRgbDetectv2(ThermalRgbDetectv2):
 
         return x if self.training else (torch.cat(z, 1), x, feature)
 
-class LastFrameThermalRgbDetectDeformv2(ThermalRgbDetectv2):
-    def conv_modules_init(self, ch):
-        self.m  = nn.ModuleList(SpatialTemporalSamplingv2(x, self.no*self.na, 3,3) for x in ch) #output deform conv
-        self.m_ir  = nn.ModuleList(SpatialTemporalSamplingv2(x, self.no*self.na, 3,3) for x in ch) #output deform conv
+
 if __name__ == '__main__':
     # dconv = DeformConv(50,50,3,3)
     # rand = torch.rand(4,50,3,20,20)
     rand = torch.rand(4,1024,3,20,20)
     # ouput = dconv(rand)
-    stnet = SpatialTemporalSampling(2*1024, 2*1024, 3,3)
-    out = stnet(rand)
+    # out = stnet(rand)
     print(out.shape)
     

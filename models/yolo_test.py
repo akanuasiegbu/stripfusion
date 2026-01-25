@@ -28,8 +28,7 @@ with open('./models/yolov_modules_to_select.yaml') as f:
 
 from models.model_detection_heads import Detect, LastFrameDetect,  \
              ThermalRgbDetect, ThermalRgbDetectv2, LastFrameThermalRgbDetect, LastFrameThermalRgbDetectv2, LastFrameThermalRgbDetectKLDiv, \
-             LastFrameThermalRgbDetectKLDivBack, LastFrameThermalRgbDetectKLDivBackNL, LastFrameDeformDetect, \
-             LastFrameThermalRgbDetectDeform, LastFrameThermalRgbDetectDeformv2
+             LastFrameThermalRgbDetectKLDivBack, LastFrameThermalRgbDetectKLDivBackNL
              
 
 
@@ -211,7 +210,7 @@ class Model(nn.Module):
             ms = [self.model[-1]]  # Detect()
 
         for m in ms:
-            if isinstance(m, Detect) or isinstance(m, ThermalRgbDetect) or isinstance(m,LastFrameDeformDetect): 
+            if isinstance(m, Detect) or isinstance(m, ThermalRgbDetect): 
                 s = 256  # 2x min stride
                 # print("1, ch, s, s", 1, ch, s, s)
                 # m.stride = torch.tensor([s / x.shape[-2] for x in self.forward(torch.zeros(1, ch, s, s), torch.zeros(1, ch, s, s))])  # forward
@@ -312,11 +311,6 @@ class Model(nn.Module):
             logger.info('%.1fms total' % sum(dt))
         return x
     
-    def _init_biases_deform(self, m, mi, s, cf=None):
-            b = mi.final_deform.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
-            b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-            b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
-            mi.final_deform.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
 
         
     def _initialize_biases(self, cf=None):  # initialize biases into Detect(), cf is class frequency
@@ -330,16 +324,7 @@ class Model(nn.Module):
         #         b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
         #         mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
 
-        if isinstance(m,LastFrameDeformDetect) or isinstance(m, LastFrameThermalRgbDetectDeform):
-            for mi, s in zip(m.m, m.stride):  # from
-                if mi.final_deform.bias is None: continue
-                
-                b = mi.final_deform.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
-                b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-                b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
-                mi.final_deform.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
-
-        elif isinstance(m, Detect):
+        if isinstance(m, Detect):
             for mi, s in zip(m.m, m.stride):  # from
                 b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
                 b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
@@ -349,22 +334,16 @@ class Model(nn.Module):
 
         elif  isinstance(m, ThermalRgbDetect) or isinstance(m, ThermalRgbDetectv2):
             for mi, s in zip(m.m, m.stride):  # from
-                if isinstance(m, LastFrameThermalRgbDetectDeformv2):
-                    self._init_biases_deform(m, mi, s, cf)
-                else:
-                    b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
-                    b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-                    b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
-                    mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
+                b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
+                b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
+                b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
+                mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
                 
             for mi, s in zip(m.m_ir, m.stride):  # from
-                if isinstance(m, LastFrameThermalRgbDetectDeformv2):
-                    self._init_biases_deform(m, mi, s, cf)
-                else:
-                    b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
-                    b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
-                    b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
-                    mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
+                b = mi.bias.view(m.na, -1)  # conv.bias(255) to (3,85)
+                b.data[:, 4] += math.log(8 / (640 / s) ** 2)  # obj (8 objects per 640 image)
+                b.data[:, 5:] += math.log(0.6 / (m.nc - 0.99)) if cf is None else torch.log(cf / cf.sum())  # cls
+                mi.bias = torch.nn.Parameter(b.view(-1), requires_grad=True)
                 
     def _print_biases(self):
         m = self.model[-1]  # Detect() module
@@ -706,22 +685,17 @@ def parse_model_tadaconv(d, ch, nf=1, use_tadaconv=True):  # model_dict, input_c
             # c2 = ch[f[0]]
             # print("Add2 arg", args[0])
             args = [nf, args[1]]
-        elif m in [GPT, TadaConvSpatialGPT, TadaConvSpatialTemporalGPT, TadaConvSpatialTemporalGPTv2]:
-            c2 = ch[f[0]]
-            args = [c2]
-            # pass
-        elif m in [DeformableSpatialAttention, DeformableSpatialAttentionWithTemporalFusionV1, 
-                   DeformableSpatialAttentionWithTemporalFusionV2, DeformableSpatialAttentionWithTemporalFusionV3]:
-            pass
         elif m in [StripMLPTemporalMixerv2]:
             args = [*args, nf]
         elif m in [MLPSpatialMixer, StripMLPMixer]:
             args =[*args]
-        elif m in [Detect, LastFrameDetect, LastFrameDeformDetect]:
+        elif m in [Detect, LastFrameDetect]:
             args.append([ch[x] for x in f])
             if isinstance(args[1], int):  # number of anchors
                 args[1] = [list(range(args[1] * 2))] * len(f)
-        elif m in [LastFrameThermalRgbDetect, LastFrameThermalRgbDetectv2, LastFrameThermalRgbDetectKLDiv, LastFrameThermalRgbDetectKLDivBack, LastFrameThermalRgbDetectKLDivBackNL, LastFrameThermalRgbDetectDeform, LastFrameThermalRgbDetectDeformv2]:
+        elif m in [LastFrameThermalRgbDetect, LastFrameThermalRgbDetectv2, 
+                   LastFrameThermalRgbDetectKLDiv, LastFrameThermalRgbDetectKLDivBack, 
+                   LastFrameThermalRgbDetectKLDivBackNL]:
             args = [*args]
             if isinstance(args[1], int):  # number of anchors
                 args[1] = [list(range(args[1] * 2))] * len(f)
