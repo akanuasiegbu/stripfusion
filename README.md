@@ -1,7 +1,11 @@
 # Strip-Fusion: Spatiotemporal Fusion for Multispectral Pedestrian Detection
 Asiegbu Miracle Kanu-Asiegbu, Nitin Jotwani, and Xiaoxiao Du
 
-Multimedia is in `multimedia_attachment` folder
+Multimedia Video: [YouTube link](https://www.youtube.com/watch?v=3WAiQ5q85c8).
+
+Multimedia PDF: A PDF version of the video content, available in the `multimedia_attachment` folder of this repository.
+
+
 
 ## 1. Docker
 - **Build Docker Image**
